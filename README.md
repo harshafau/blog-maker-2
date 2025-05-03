@@ -27,7 +27,7 @@ An automated system for generating and publishing blog posts about electric vehi
 1. **Clone the repository**:
    ```bash
    git clone https://github.com/yourusername/ev-blog-automation.git
-   cd ev-blog-automation
+   cd blog-maker-2
    ```
 
 2. **Run the setup script**:
