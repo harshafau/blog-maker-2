@@ -68,27 +68,101 @@ class ImageHandler:
             self.logger.warning("ChromeDriver not available, skipping Google Images search")
             return []
 
+        # Create a directory for the search results
+        search_dir = os.path.join(self.temp_dir, search_query)
+        os.makedirs(search_dir, exist_ok=True)
+
+        # Use a more reliable approach with webdriver-manager
         try:
-            # Create a new scraper instance for each search
-            google_scraper = GoogleImageScraper(
-                webdriver_path=self.webdriver_path,
-                image_path=self.temp_dir,
-                search_key=search_query,
-                number_of_images=num_images,
-                headless=True,
-                min_resolution=(0, 0),  # Accept any resolution
-                max_resolution=(3840, 2160)  # Up to 4K resolution
+            from selenium import webdriver
+            from selenium.webdriver.chrome.service import Service
+            from selenium.webdriver.chrome.options import Options
+            from webdriver_manager.chrome import ChromeDriverManager
+
+            # Set up Chrome options
+            chrome_options = Options()
+            chrome_options.add_argument("--headless")
+            chrome_options.add_argument("--no-sandbox")
+            chrome_options.add_argument("--disable-dev-shm-usage")
+
+            # Initialize the Chrome driver with webdriver-manager
+            self.logger.info("Initializing Chrome driver with webdriver-manager")
+            driver = webdriver.Chrome(
+                service=Service(ChromeDriverManager().install()),
+                options=chrome_options
             )
 
-            image_urls = google_scraper.find_image_urls()
-            if not image_urls:
-                return []
+            # Set up the search URL
+            search_url = f"https://www.google.com/search?q={search_query}&tbm=isch"
+            self.logger.info(f"Searching Google Images with URL: {search_url}")
 
-            # Save images and get their paths
-            google_scraper.save_images(image_urls, keep_filenames=False)
+            # Navigate to the search URL
+            driver.get(search_url)
+
+            # Wait for the page to load
+            import time
+            time.sleep(2)
+
+            # Find image elements
+            from selenium.webdriver.common.by import By
+            img_elements = driver.find_elements(By.CSS_SELECTOR, "img.rg_i")
+
+            # Get image URLs
+            image_urls = []
+            for i, img in enumerate(img_elements):
+                if i >= num_images:
+                    break
+
+                try:
+                    # Get the image source
+                    img.click()
+                    time.sleep(1)
+
+                    # Find the larger image
+                    large_img = driver.find_elements(By.CSS_SELECTOR, "img.r48jcc")
+                    if large_img:
+                        src = large_img[0].get_attribute("src")
+                        if src and src.startswith("http"):
+                            image_urls.append(src)
+                            self.logger.info(f"Found image URL: {src}")
+                except Exception as e:
+                    self.logger.warning(f"Error getting image {i}: {str(e)}")
+                    continue
+
+            # Close the driver
+            driver.quit()
+
+            # Download the images
+            for i, url in enumerate(image_urls):
+                try:
+                    # Download the image
+                    response = requests.get(url, stream=True, timeout=10)
+                    if response.status_code == 200:
+                        # Generate a filename
+                        ext = "jpg"  # Default extension
+                        if "image/png" in response.headers.get("Content-Type", ""):
+                            ext = "png"
+                        elif "image/jpeg" in response.headers.get("Content-Type", ""):
+                            ext = "jpeg"
+                        elif "image/webp" in response.headers.get("Content-Type", ""):
+                            ext = "webp"
+
+                        # Clean the search query for filename
+                        clean_query = ''.join(c if c.isalnum() else '' for c in search_query)
+                        filename = f"{clean_query}{i}.{ext}"
+                        filepath = os.path.join(search_dir, filename)
+
+                        # Save the image
+                        with open(filepath, "wb") as f:
+                            for chunk in response.iter_content(chunk_size=8192):
+                                f.write(chunk)
+
+                        self.logger.info(f"Saved image to {filepath}")
+                except Exception as e:
+                    self.logger.warning(f"Error downloading image {i}: {str(e)}")
+                    continue
 
             # Get the saved image paths
-            search_dir = os.path.join(self.temp_dir, search_query)
             if not os.path.exists(search_dir):
                 return []
 
