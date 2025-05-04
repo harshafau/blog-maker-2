@@ -26,11 +26,16 @@ An automated system for generating and publishing blog posts about electric vehi
 
 1. **Clone the repository**:
    ```bash
-   git clone https://github.com/yourusername/ev-blog-automation.git
-   cd blog-maker-2
+   git clone https://github.com/harshafau/blog-maker.git
+   cd blog-maker
    ```
 
-2. **Run the setup script**:
+2. **Install dependencies**:
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+3. **Run the setup script**:
    ```bash
    python3 setup.py
    ```
@@ -38,9 +43,10 @@ An automated system for generating and publishing blog posts about electric vehi
    - Check your Python version
    - Install required dependencies
    - Create necessary directories
+   - Install ChromeDriver for image scraping
    - Check for Ollama and Gemma model (optional)
 
-3. **Install Ollama** (if not already installed):
+4. **Install Ollama** (if not already installed):
    - Download from [ollama.ai/download](https://ollama.ai/download)
    - Install the Gemma model:
      ```bash
@@ -94,9 +100,14 @@ The Google Sheet must be publicly accessible for reading.
 ## Troubleshooting
 
 - **Import Errors**: Run `python3 setup.py` to install missing dependencies
+- **ChromeDriver Issues**: If image scraping doesn't work, try reinstalling ChromeDriver:
+  ```bash
+  python3 modules/chromedriver_installer.py
+  ```
 - **Ollama Connection Issues**: Make sure Ollama is running with `ollama serve`
 - **Google Sheet Access**: Ensure your Google Sheet is publicly accessible
 - **WordPress Connection**: Verify your WordPress credentials and URL
+- **Image Scraping Errors**: If you see "ChromeDriver not found" errors, the automatic installation may have failed. Try installing ChromeDriver manually from [chromedriver.chromium.org/downloads](https://chromedriver.chromium.org/downloads) and place it in the `modules/webdriver/` directory.
 
 ## License
 

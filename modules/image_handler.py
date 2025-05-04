@@ -2,6 +2,7 @@ import os
 import time
 import logging
 import requests
+import subprocess
 from PIL import Image
 from io import BytesIO
 from config.config import (
@@ -20,21 +21,53 @@ class ImageHandler:
         self.logger = logging.getLogger(__name__)
         os.makedirs(temp_dir, exist_ok=True)
         os.makedirs(DEFAULT_IMAGE_PATH, exist_ok=True)
-        
+
         # Initialize Google Image Scraper
         self.webdriver_path = os.path.join(os.path.dirname(__file__), 'webdriver', 'chromedriver')
-        
+
         # Check if ChromeDriver exists
         if not os.path.exists(self.webdriver_path):
-            self.logger.error("ChromeDriver not found at: %s", self.webdriver_path)
-            self.webdriver_path = None
+            self.logger.warning("ChromeDriver not found at: %s", self.webdriver_path)
+
+            # Try to install ChromeDriver
+            if self._install_chromedriver():
+                self.logger.info("ChromeDriver installed successfully")
+            else:
+                self.logger.error("Failed to install ChromeDriver")
+                self.webdriver_path = None
+
+    def _install_chromedriver(self):
+        """Attempt to install ChromeDriver"""
+        try:
+            # Check if chromedriver_installer.py exists
+            installer_path = os.path.join(os.path.dirname(__file__), 'chromedriver_installer.py')
+            if not os.path.exists(installer_path):
+                self.logger.error("ChromeDriver installer not found")
+                return False
+
+            # Run the ChromeDriver installer
+            self.logger.info("Attempting to install ChromeDriver...")
+            result = subprocess.run([sys.executable, installer_path],
+                                   stdout=subprocess.PIPE,
+                                   stderr=subprocess.PIPE,
+                                   text=True)
+
+            if result.returncode == 0:
+                self.logger.info("ChromeDriver installed successfully")
+                return True
+            else:
+                self.logger.error(f"ChromeDriver installation failed: {result.stderr}")
+                return False
+        except Exception as e:
+            self.logger.error(f"Error installing ChromeDriver: {str(e)}")
+            return False
 
     def search_google_images(self, search_query, num_images=5):
         """Search images using Google Image Scraper"""
         if not self.webdriver_path:
             self.logger.warning("ChromeDriver not available, skipping Google Images search")
             return []
-            
+
         try:
             # Create a new scraper instance for each search
             google_scraper = GoogleImageScraper(
@@ -46,24 +79,24 @@ class ImageHandler:
                 min_resolution=(0, 0),  # Accept any resolution
                 max_resolution=(3840, 2160)  # Up to 4K resolution
             )
-            
+
             image_urls = google_scraper.find_image_urls()
             if not image_urls:
                 return []
-                
+
             # Save images and get their paths
             google_scraper.save_images(image_urls, keep_filenames=False)
-            
+
             # Get the saved image paths
             search_dir = os.path.join(self.temp_dir, search_query)
             if not os.path.exists(search_dir):
                 return []
-                
+
             # Accept all image files
-            return [os.path.join(search_dir, f) 
+            return [os.path.join(search_dir, f)
                    for f in os.listdir(search_dir)
                    if os.path.isfile(os.path.join(search_dir, f))]
-                   
+
         except Exception as e:
             self.logger.error(f"Error in Google image search: {str(e)}")
             return []
@@ -76,7 +109,7 @@ class ImageHandler:
 
             # Search for images using Google Image Scraper
             image_paths = self.search_google_images(search_query, num_images)
-            
+
             if not image_paths:
                 self.logger.warning("No images found from Google Images")
                 return []
@@ -91,7 +124,7 @@ class ImageHandler:
         """Select the most suitable image as featured image"""
         if not images:
             return None
-        
+
         # For now, just return the first image
         # In a more sophisticated implementation, you could analyze images
         # to select the most suitable one based on size, aspect ratio, etc.
@@ -113,4 +146,4 @@ class ImageHandler:
 
     def __del__(self):
         """Destructor to ensure cleanup"""
-        self.cleanup() 
+        self.cleanup()
