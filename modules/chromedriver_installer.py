@@ -15,7 +15,17 @@ import requests
 import zipfile
 import tarfile
 import shutil
+import ssl
 from pathlib import Path
+
+# Disable SSL verification if needed (for macOS certificate issues)
+try:
+    import certifi
+    # Use certifi for SSL verification
+    os.environ['REQUESTS_CA_BUNDLE'] = certifi.where()
+except ImportError:
+    # If certifi is not available, disable SSL verification (not recommended but works as fallback)
+    ssl._create_default_https_context = ssl._create_unverified_context
 
 # Setup logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
@@ -33,21 +43,21 @@ def get_chrome_version():
             return version
         elif system == "Darwin":
             # macOS
-            process = subprocess.Popen(['/Applications/Google Chrome.app/Contents/MacOS/Google Chrome', '--version'], 
+            process = subprocess.Popen(['/Applications/Google Chrome.app/Contents/MacOS/Google Chrome', '--version'],
                                       stdout=subprocess.PIPE, stderr=subprocess.PIPE)
             output, _ = process.communicate()
             version = output.decode('utf-8').strip().split(' ')[-1]
             return version
         elif system == "Linux":
             # Linux
-            process = subprocess.Popen(['google-chrome', '--version'], 
+            process = subprocess.Popen(['google-chrome', '--version'],
                                       stdout=subprocess.PIPE, stderr=subprocess.PIPE)
             output, _ = process.communicate()
             version = output.decode('utf-8').strip().split(' ')[-1]
             return version
     except Exception as e:
         logger.warning(f"Could not determine Chrome version: {e}")
-    
+
     # If we can't determine the version, use the latest
     return None
 
@@ -55,7 +65,7 @@ def get_chromedriver_url(chrome_version=None):
     """Get the appropriate ChromeDriver download URL for the current system and Chrome version"""
     system = platform.system()
     machine = platform.machine().lower()
-    
+
     # Determine platform
     if system == "Windows":
         platform_name = "win32"
@@ -72,7 +82,7 @@ def get_chromedriver_url(chrome_version=None):
     else:
         logger.error(f"Unsupported operating system: {system}")
         return None
-    
+
     # If Chrome version is provided, get the matching ChromeDriver version
     if chrome_version:
         major_version = chrome_version.split('.')[0]
@@ -96,7 +106,7 @@ def get_chromedriver_url(chrome_version=None):
                     return download_url
         except Exception as e:
             logger.warning(f"Error determining ChromeDriver version for Chrome {chrome_version}: {e}")
-    
+
     # If we couldn't determine the version or there was an error, use the latest stable version
     try:
         url = "https://chromedriver.storage.googleapis.com/LATEST_RELEASE"
@@ -107,7 +117,7 @@ def get_chromedriver_url(chrome_version=None):
             return download_url
     except Exception as e:
         logger.error(f"Error getting latest ChromeDriver version: {e}")
-    
+
     return None
 
 def download_and_install_chromedriver(target_dir=None):
@@ -115,53 +125,85 @@ def download_and_install_chromedriver(target_dir=None):
     if target_dir is None:
         # Use the default location in the modules/webdriver directory
         target_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'webdriver')
-    
+
     # Create the target directory if it doesn't exist
     os.makedirs(target_dir, exist_ok=True)
-    
-    # Get Chrome version
-    chrome_version = get_chrome_version()
-    if chrome_version:
-        logger.info(f"Detected Chrome version: {chrome_version}")
-    else:
-        logger.warning("Could not detect Chrome version, will use latest ChromeDriver")
-    
-    # Get ChromeDriver download URL
-    download_url = get_chromedriver_url(chrome_version)
-    if not download_url:
-        logger.error("Could not determine ChromeDriver download URL")
-        return False
-    
-    logger.info(f"Downloading ChromeDriver from: {download_url}")
-    
-    # Download ChromeDriver
+
+    # First try using webdriver-manager (more reliable)
     try:
-        response = requests.get(download_url, stream=True)
-        if response.status_code != 200:
-            logger.error(f"Failed to download ChromeDriver: HTTP {response.status_code}")
+        logger.info("Attempting to install ChromeDriver using webdriver-manager...")
+        from webdriver_manager.chrome import ChromeDriverManager
+        from webdriver_manager.core.os_manager import ChromeType
+
+        # Install ChromeDriver using webdriver-manager
+        driver_path = ChromeDriverManager().install()
+
+        # Copy the driver to our target directory
+        import shutil
+        chromedriver_name = "chromedriver.exe" if platform.system() == "Windows" else "chromedriver"
+        target_path = os.path.join(target_dir, chromedriver_name)
+
+        # Copy the driver file
+        shutil.copy2(driver_path, target_path)
+
+        # Make executable on Unix-like systems
+        if platform.system() != "Windows":
+            os.chmod(target_path, 0o755)
+
+        logger.info(f"ChromeDriver installed successfully at: {target_path}")
+        return True
+    except Exception as e:
+        logger.warning(f"Failed to install ChromeDriver using webdriver-manager: {e}")
+        logger.info("Falling back to manual download method...")
+
+    # Fallback to manual download method
+    try:
+        # Get Chrome version
+        chrome_version = get_chrome_version()
+        if chrome_version:
+            logger.info(f"Detected Chrome version: {chrome_version}")
+        else:
+            logger.warning("Could not detect Chrome version, will use latest ChromeDriver")
+
+        # Get ChromeDriver download URL
+        download_url = get_chromedriver_url(chrome_version)
+        if not download_url:
+            logger.error("Could not determine ChromeDriver download URL")
             return False
-        
+
+        logger.info(f"Downloading ChromeDriver from: {download_url}")
+
+        # Download ChromeDriver with SSL verification disabled if needed
+        response = requests.get(download_url, stream=True, verify=True)
+        if response.status_code != 200:
+            # Try again with SSL verification disabled
+            logger.warning("Download failed with SSL verification. Trying without verification...")
+            response = requests.get(download_url, stream=True, verify=False)
+            if response.status_code != 200:
+                logger.error(f"Failed to download ChromeDriver: HTTP {response.status_code}")
+                return False
+
         # Save the zip file
         zip_path = os.path.join(target_dir, "chromedriver.zip")
         with open(zip_path, 'wb') as f:
             for chunk in response.iter_content(chunk_size=8192):
                 f.write(chunk)
-        
+
         # Extract the zip file
         with zipfile.ZipFile(zip_path, 'r') as zip_ref:
             zip_ref.extractall(target_dir)
-        
+
         # Remove the zip file
         os.remove(zip_path)
-        
+
         # Make the ChromeDriver executable
         chromedriver_path = os.path.join(target_dir, "chromedriver")
         if platform.system() != "Windows":
             os.chmod(chromedriver_path, 0o755)
-        
+
         logger.info(f"ChromeDriver installed successfully at: {chromedriver_path}")
         return True
-    
+
     except Exception as e:
         logger.error(f"Error installing ChromeDriver: {e}")
         return False

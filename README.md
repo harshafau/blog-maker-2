@@ -100,13 +100,33 @@ The Google Sheet must be publicly accessible for reading.
 ## Troubleshooting
 
 - **Import Errors**: Run `python3 setup.py` to install missing dependencies
+
+- **SSL Certificate Issues** (macOS): If you see SSL certificate verification errors, run:
+  ```bash
+  python3 fix_ssl.py
+  ```
+  This will install the necessary certificates for SSL verification.
+
 - **ChromeDriver Issues**: If image scraping doesn't work, try reinstalling ChromeDriver:
   ```bash
   python3 modules/chromedriver_installer.py
   ```
+
+- **Chrome Version Mismatch**: If you see "This version of ChromeDriver only supports Chrome version X" errors, run:
+  ```bash
+  pip install webdriver-manager
+  python3 modules/chromedriver_installer.py
+  ```
+  This will download the correct ChromeDriver version for your Chrome browser.
+
 - **Ollama Connection Issues**: Make sure Ollama is running with `ollama serve`
+
 - **Google Sheet Access**: Ensure your Google Sheet is publicly accessible
+
 - **WordPress Connection**: Verify your WordPress credentials and URL
+  - Make sure your WordPress URL includes the protocol (http:// or https://)
+  - Check that your username and password are correct
+
 - **Image Scraping Errors**: If you see "ChromeDriver not found" errors, the automatic installation may have failed. Try installing ChromeDriver manually from [chromedriver.chromium.org/downloads](https://chromedriver.chromium.org/downloads) and place it in the `modules/webdriver/` directory.
 
 ## License

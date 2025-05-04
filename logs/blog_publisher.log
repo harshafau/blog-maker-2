@@ -1,0 +1,84 @@
+2025-05-03 19:01:05,386 - werkzeug - WARNING -  * Running on all addresses.
+   WARNING: This is a development server. Do not use it in a production deployment.
+2025-05-03 19:01:05,386 - werkzeug - INFO -  * Running on http://192.168.0.102:8000/ (Press CTRL+C to quit)
+2025-05-03 19:01:07,640 - werkzeug - INFO - 127.0.0.1 - - [03/May/2025 19:01:07] "GET / HTTP/1.1" 200 -
+2025-05-03 19:01:07,668 - werkzeug - INFO - 127.0.0.1 - - [03/May/2025 19:01:07] "GET /static/css/style.css HTTP/1.1" 200 -
+2025-05-03 19:01:07,668 - werkzeug - INFO - 127.0.0.1 - - [03/May/2025 19:01:07] "GET /static/js/script.js HTTP/1.1" 200 -
+2025-05-03 19:01:07,890 - werkzeug - INFO - 127.0.0.1 - - [03/May/2025 19:01:07] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+2025-05-04 10:39:59,296 - werkzeug - WARNING -  * Running on all addresses.
+   WARNING: This is a development server. Do not use it in a production deployment.
+2025-05-04 10:39:59,296 - werkzeug - INFO -  * Running on http://192.168.0.102:8001/ (Press CTRL+C to quit)
+2025-05-04 10:40:01,541 - werkzeug - INFO - 127.0.0.1 - - [04/May/2025 10:40:01] "GET / HTTP/1.1" 200 -
+2025-05-04 10:40:01,584 - werkzeug - INFO - 127.0.0.1 - - [04/May/2025 10:40:01] "[36mGET /static/js/script.js HTTP/1.1[0m" 304 -
+2025-05-04 10:40:01,585 - werkzeug - INFO - 127.0.0.1 - - [04/May/2025 10:40:01] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+2025-05-04 10:40:16,263 - web_interface - INFO - Starting blog publishing process with custom parameters:
+2025-05-04 10:40:16,263 - web_interface - INFO - Started blog automation process with Sheet ID: 1fRLoVPJLIAUqhJtrcbzEDw69NbBfeQKo6of4JNV9Emc, WordPress URL: https://evehicleshop.in
+2025-05-04 10:40:16,264 - web_interface - INFO -   - Google Sheet ID: 1fRLoVPJLIAUqhJtrcbzEDw69NbBfeQKo6of4JNV9Emc
+2025-05-04 10:40:16,264 - werkzeug - INFO - 127.0.0.1 - - [04/May/2025 10:40:16] "POST /generate HTTP/1.1" 200 -
+2025-05-04 10:40:16,264 - web_interface - INFO -   - WordPress URL: https://evehicleshop.in
+2025-05-04 10:40:16,264 - web_interface - INFO -   - Number of Images: 3
+2025-05-04 10:40:16,264 - web_interface - INFO -   - Article Length: 1000 words
+2025-05-04 10:40:16,265 - modules.google_sheets - INFO - GoogleSheetsManager initialized with spreadsheet ID: 1fRLoVPJLIAUqhJtrcbzEDw69NbBfeQKo6of4JNV9Emc
+2025-05-04 10:40:16,265 - modules.wordpress_integration - INFO - Initialized WordPress integration for https://evehicleshop.in
+2025-05-04 10:40:16,265 - modules.content_processor - INFO - ContentProcessor initialized
+2025-05-04 10:40:16,265 - modules.google_sheets - INFO - Fetching data from Google Sheet: 1fRLoVPJLIAUqhJtrcbzEDw69NbBfeQKo6of4JNV9Emc
+2025-05-04 10:40:16,269 - werkzeug - INFO - 127.0.0.1 - - [04/May/2025 10:40:16] "GET /logs HTTP/1.1" 200 -
+2025-05-04 10:40:17,465 - modules.google_sheets - INFO - Processing post data: {'topic name': 'therâ\x80\x99s charging infrastructure', 'title': 'How Ather Grid Is Building India Fastest EV Charging Network', 'keywords': '"Ather Grid', 'must have elements': 'EV charging India', 'context': 'fast charging"', 'status': '"bullet points'}
+2025-05-04 10:40:17,465 - modules.google_sheets - INFO - Processing post data: {'topic name': 'Ather business model', 'title': '"Inside Ather Business Model: Premium', 'keywords': 'Profitable & Purposeful"', 'must have elements': '"Ather business strategy', 'context': 'EV startup India', 'status': 'premium EVs"'}
+2025-05-04 10:40:17,467 - web_interface - INFO - Processing post: {'title': 'How Ather Grid Is Building India Fastest EV Charging Network', 'topic': 'therâ\x80\x99s charging infrastructure', 'keywords': 'Ather Grid', 'context': 'fast charging', 'status': 'bullet points', 'must_have_elements': 'EV charging India', 'images': []}
+2025-05-04 10:40:17,468 - web_interface - INFO - Searching for images for: How Ather Grid Is Building India Fastest EV Charging Network
+2025-05-04 10:40:17,468 - modules.image_handler - INFO - Searching for images with query: therâs charging infrastructure Ather Grid
+2025-05-04 10:40:42,336 - web_interface - INFO - Generating content for: How Ather Grid Is Building India Fastest EV Charging Network
+2025-05-04 10:40:42,336 - web_interface - INFO - Topic: therâs charging infrastructure
+2025-05-04 10:40:42,337 - web_interface - INFO - Keywords: Ather Grid
+2025-05-04 10:40:42,337 - web_interface - INFO - Context: fast charging
+2025-05-04 10:40:42,337 - web_interface - INFO - Target article length: 1000 words
+2025-05-04 10:41:20,522 - modules.llm_integration - INFO - Successfully generated content using Gemma
+2025-05-04 10:41:20,524 - web_interface - INFO - Generated content using LLM
+2025-05-04 10:41:20,541 - web_interface - INFO - Converted markdown to HTML
+2025-05-04 10:41:20,541 - web_interface - INFO - Adding required elements: ['EV charging India']
+2025-05-04 10:41:20,541 - web_interface - INFO - Inserting images into content
+2025-05-04 10:41:45,325 - modules.wordpress_integration - INFO - Successfully uploaded image: therâscharginginfrastructureAtherGrid2.png -> ID: 22470, URL: https://evehicleshop.in/wp-content/uploads/2025/05/therascharginginfrastructureAtherGrid2-1.png
+2025-05-04 10:41:45,328 - modules.content_processor - INFO - Successfully uploaded and added image: temp/images/therâs charging infrastructure Ather Grid/therâscharginginfrastructureAtherGrid2.png
+2025-05-04 10:41:46,479 - modules.wordpress_integration - INFO - Successfully uploaded image: therâscharginginfrastructureAtherGrid1.webp -> ID: 22471, URL: https://evehicleshop.in/wp-content/uploads/2025/05/therascharginginfrastructureAtherGrid1.webp
+2025-05-04 10:41:46,481 - modules.content_processor - INFO - Successfully uploaded and added image: temp/images/therâs charging infrastructure Ather Grid/therâscharginginfrastructureAtherGrid1.webp
+2025-05-04 10:41:46,481 - modules.content_processor - INFO - Successfully inserted 2 images into content
+2025-05-04 10:41:46,481 - modules.content_processor - INFO - Successfully inserted AdSense into content
+2025-05-04 10:41:46,481 - web_interface - INFO - Added AdSense to content
+2025-05-04 10:41:46,481 - web_interface - INFO - Publishing post: How Ather Grid Is Building India Fastest EV Charging Network
+2025-05-04 10:41:47,073 - modules.wordpress_integration - INFO - Successfully uploaded image: therâscharginginfrastructureAtherGrid0.jpeg -> ID: 22472, URL: https://evehicleshop.in/wp-content/uploads/2025/05/therascharginginfrastructureAtherGrid0.jpeg
+2025-05-04 10:41:50,612 - modules.wordpress_integration - INFO - Successfully created post with ID: 22473
+2025-05-04 10:41:50,613 - modules.wordpress_integration - INFO - Successfully published post with ID: 22473
+2025-05-04 10:41:50,613 - web_interface - INFO - Successfully published post: How Ather Grid Is Building India Fastest EV Charging Network (ID: 22473)
+2025-05-04 10:41:50,613 - web_interface - INFO - Processing post: {'title': '"Inside Ather Business Model: Premium', 'topic': 'Ather business model', 'keywords': 'Profitable & Purposeful', 'context': 'EV startup India', 'status': 'premium EVs', 'must_have_elements': 'Ather business strategy', 'images': []}
+2025-05-04 10:41:50,613 - web_interface - INFO - Searching for images for: "Inside Ather Business Model: Premium
+2025-05-04 10:41:50,613 - modules.image_handler - INFO - Searching for images with query: Ather business model Profitable & Purposeful
+2025-05-04 10:42:10,995 - web_interface - INFO - Generating content for: "Inside Ather Business Model: Premium
+2025-05-04 10:42:10,996 - web_interface - INFO - Topic: Ather business model
+2025-05-04 10:42:10,996 - web_interface - INFO - Keywords: Profitable & Purposeful
+2025-05-04 10:42:10,996 - web_interface - INFO - Context: EV startup India
+2025-05-04 10:42:10,996 - web_interface - INFO - Target article length: 1000 words
+2025-05-04 10:42:43,984 - modules.llm_integration - INFO - Successfully generated content using Gemma
+2025-05-04 10:42:43,985 - web_interface - INFO - Generated content using LLM
+2025-05-04 10:42:44,065 - web_interface - INFO - Converted markdown to HTML
+2025-05-04 10:42:44,066 - web_interface - INFO - Adding required elements: ['Ather business strategy']
+2025-05-04 10:42:44,066 - web_interface - INFO - Inserting images into content
+2025-05-04 10:42:44,997 - modules.wordpress_integration - INFO - Successfully uploaded image: AtherbusinessmodelProfitablePurposeful0.jpeg -> ID: 22474, URL: https://evehicleshop.in/wp-content/uploads/2025/05/AtherbusinessmodelProfitablePurposeful0-1.jpeg
+2025-05-04 10:42:44,999 - modules.content_processor - INFO - Successfully uploaded and added image: temp/images/Ather business model Profitable & Purposeful/AtherbusinessmodelProfitablePurposeful0.jpeg
+2025-05-04 10:42:46,114 - modules.wordpress_integration - INFO - Successfully uploaded image: AtherbusinessmodelProfitablePurposeful1.jpeg -> ID: 22475, URL: https://evehicleshop.in/wp-content/uploads/2025/05/AtherbusinessmodelProfitablePurposeful1-1.jpeg
+2025-05-04 10:42:46,115 - modules.content_processor - INFO - Successfully uploaded and added image: temp/images/Ather business model Profitable & Purposeful/AtherbusinessmodelProfitablePurposeful1.jpeg
+2025-05-04 10:42:46,115 - modules.content_processor - INFO - Successfully inserted 2 images into content
+2025-05-04 10:42:46,115 - modules.content_processor - INFO - Successfully inserted AdSense into content
+2025-05-04 10:42:46,115 - web_interface - INFO - Added AdSense to content
+2025-05-04 10:42:46,115 - web_interface - INFO - Publishing post: "Inside Ather Business Model: Premium
+2025-05-04 10:42:46,705 - modules.wordpress_integration - INFO - Successfully uploaded image: AtherbusinessmodelProfitablePurposeful2.jpeg -> ID: 22476, URL: https://evehicleshop.in/wp-content/uploads/2025/05/AtherbusinessmodelProfitablePurposeful2-1.jpeg
+2025-05-04 10:42:49,759 - modules.wordpress_integration - INFO - Successfully created post with ID: 22477
+2025-05-04 10:42:49,761 - modules.wordpress_integration - INFO - Successfully published post with ID: 22477
+2025-05-04 10:42:49,762 - web_interface - INFO - Successfully published post: "Inside Ather Business Model: Premium (ID: 22477)
+2025-05-04 10:42:49,762 - web_interface - INFO - Blog publishing process completed
+2025-05-04 10:48:43,177 - werkzeug - WARNING -  * Running on all addresses.
+   WARNING: This is a development server. Do not use it in a production deployment.
+2025-05-04 10:48:43,178 - werkzeug - INFO -  * Running on http://192.168.0.102:8001/ (Press CTRL+C to quit)
+2025-05-04 10:48:45,423 - werkzeug - INFO - 127.0.0.1 - - [04/May/2025 10:48:45] "GET / HTTP/1.1" 200 -
+2025-05-04 10:48:45,486 - werkzeug - INFO - 127.0.0.1 - - [04/May/2025 10:48:45] "[36mGET /static/js/script.js HTTP/1.1[0m" 304 -
+2025-05-04 10:48:45,487 - werkzeug - INFO - 127.0.0.1 - - [04/May/2025 10:48:45] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
