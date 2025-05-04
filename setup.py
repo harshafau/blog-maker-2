@@ -34,11 +34,50 @@ def check_pip():
         print("Error: pip is not installed or not working properly.")
         return False
 
+def fix_ssl_certificates():
+    """Fix SSL certificate verification on macOS"""
+    if platform.system() != "Darwin":
+        return True
+
+    print("Checking SSL certificate verification for macOS...")
+
+    try:
+        # Install certifi
+        subprocess.run([sys.executable, "-m", "pip", "install", "certifi"],
+                      stdout=subprocess.PIPE,
+                      stderr=subprocess.PIPE,
+                      text=True)
+
+        # Try to import certifi
+        try:
+            import certifi
+            print(f"Using certificates from: {certifi.where()}")
+            return True
+        except ImportError:
+            print("Could not import certifi. SSL verification may fail.")
+            return False
+    except Exception as e:
+        print(f"Error fixing SSL certificates: {e}")
+        return False
+
 def install_requirements():
     """Install required packages from requirements.txt"""
     print("Installing required packages...")
+
+    # Fix SSL certificates first (for macOS)
+    if platform.system() == "Darwin":
+        fix_ssl_certificates()
+
     try:
+        # Install requirements
         subprocess.check_call([sys.executable, "-m", "pip", "install", "-r", "requirements.txt"])
+
+        # Install certifi separately (important for SSL verification)
+        subprocess.run([sys.executable, "-m", "pip", "install", "certifi"],
+                      stdout=subprocess.PIPE,
+                      stderr=subprocess.PIPE,
+                      text=True)
+
         print("All required packages installed successfully!")
         return True
     except subprocess.CalledProcessError as e:
